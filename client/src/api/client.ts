@@ -3,7 +3,7 @@ import type { ClientToServerEvents, FloorPlan, Project, ProjectSummary, ServerTo
 
 // Default: the API on the same host the page came from, so a phone opening http://<pc-ip>:5173
 // talks to http://<pc-ip>:3001 rather than to itself.
-const API_URL = import.meta.env.VITE_API_URL ?? `${location.protocol}//${location.hostname}:3001`;
+export const API_URL = import.meta.env.VITE_API_URL ?? `${location.protocol}//${location.hostname}:3001`;
 const WS_URL = import.meta.env.VITE_WS_URL ?? API_URL;
 
 async function get<T>(path: string): Promise<T> {
@@ -22,6 +22,16 @@ export const api = {
   listProjects: () => get<ProjectSummary[]>('/api/projects'),
   getProject: (id: string) => get<Project>(`/api/projects/${id}`),
   getFloorPlan: (floorId: string) => get<FloorPlan>(`/api/floors/${floorId}/plan`),
+  /** Public: a buyer asks an agent to call about a unit. */
+  requestHold: async (unitId: string, details: { name: string; phone: string; note?: string }) => {
+    const res = await fetch(`${API_URL}/api/units/${unitId}/hold-requests`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(details),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error ?? 'Something went wrong. Please try again.');
+    }
+  },
 };
 
 export interface ProjectSubscription {

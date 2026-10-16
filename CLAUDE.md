@@ -258,6 +258,15 @@ Flow: `npm run import:dxf -- --name X ground.dxf:1 typical.dxf:2-12` → `parseD
 - `ProjectImport` in `types/index.ts` is the normalized format for every source (DXF now; IFC and the plugins later). `POST /api/projects/import` and `POST /api/projects/:id/import` take it directly and need the agent key.
 - A re-import matches units by `unit_code`. It replaces geometry and rooms and keeps `status`, `price` and `reserved_until`. If it would delete sold or reserved units, it fails with a 409 unless `allow_removing_committed` is set. New units start available at price 0.
 
+### Agents, Prices and Buyer Requests
+
+- **Auth** is in `services/auth.ts`. Agents are email + scrypt password with role `admin|agent`. Sessions are random bearer tokens; only their SHA-256 is stored, and they last 7 days. Login is rate-limited in Redis per IP and per account. `requireAgent` accepts a session token or `AGENT_API_KEY`. The key is the "system" actor and also passes `requireAdmin`. `res.locals.actor` says who it was.
+- **Audit:** every status or price change writes `unit_events` (agent_id null = system). `GET /api/units/:id/events` reads it.
+- **Prices:** `POST /api/projects/:id/prices` (admin) takes `{rows: PriceRow[]}` with prices in SAR (major units) and stores halalas. `?dry_run=true` previews. It's all-or-nothing: any row error gives a 422 with the full result and nothing written. Applied changes broadcast `unit_updated` with `price`. Sheets are parsed client-side in `client/src/agent/sheet.ts` (CSV + .xlsx via read-excel-file; English and Arabic headers, Arabic digits).
+- **Holds:** `POST /api/units/:id/hold-requests` is public and rate-limited (5/h/IP), with duplicates (same unit + phone, open) merged. The unit status does **not** change. Agents use `GET /api/holds` and `PATCH /api/holds/:id`. Buyer personal data is only exposed on agent endpoints.
+- **Client:** `agent.html` + `src/agent/*` is the agent panel. It builds DOM only via the `h()` helper (textContent), because it shows buyer-entered text. `components/UnitPanel.ts` is the buyer drawer that opens when a unit in `FloorScene` is clicked.
+- Bootstrap the first admin with `npm run agent:create -- --email … --name … --admin`. Local test accounts go in `server/.dev-agents.txt` (git-ignored).
+
 ### IFC Import (Revit / Archicad), the recommended source
 
 `npm run import:ifc -- --name X model.ifc` → `parseIfc()` spawns `ifc.py` (IfcOpenShell + shapely) → `assembleIfcProject()` → `importProject()`. Architect-facing rules are in `docs/revit-export-guide.md`.

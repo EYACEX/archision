@@ -128,7 +128,38 @@ export interface UnitStatusUpdate {
   unit_id: string;
   status: UnitStatus;
   reserved_until?: string;
+  price?: number;              // minor units; present when the price changed (e.g. a price upload)
   updated_by?: string;
+}
+
+// Sales staff (agent panel)
+export type AgentRole = 'admin' | 'agent';
+export interface AgentInfo { id: string; email: string; name: string; role: AgentRole }
+
+/** A buyer asking to hold a unit. Personal data: agent-only endpoints. */
+export type HoldStatus = 'open' | 'contacted' | 'reserved' | 'dismissed';
+export const HOLD_STATUSES: readonly HoldStatus[] = ['open', 'contacted', 'reserved', 'dismissed'];
+export interface HoldRequest {
+  id: string;
+  unit_id: string;
+  unit_code: string;
+  project_id: string;
+  name: string;
+  phone: string;
+  note?: string;
+  status: HoldStatus;
+  handled_by?: string;         // agent name
+  created_at: string;
+}
+
+/** One row of a price sheet, already parsed: price in major units (SAR), status optional. */
+export interface PriceRow { unit_code: string; price: number; status?: UnitStatus }
+export interface PriceChange { unit_code: string; from_price: number; to_price: number; from_status: UnitStatus; to_status: UnitStatus }
+export interface PriceUploadResult {
+  applied: boolean;            // false on a dry run, or when there were errors
+  changes: PriceChange[];
+  unchanged: number;
+  errors: { row: number; unit_code?: string; error: string }[];
 }
 
 // Socket.io event maps — status changes are written via PATCH /api/units/:id only;
@@ -143,3 +174,6 @@ export interface ClientToServerEvents {
 }
 
 export const UNIT_STATUSES: readonly UnitStatus[] = ['available', 'sold', 'reserved'];
+
+/** How long a reservation lasts when the agent doesn't set an expiry. */
+export const DEFAULT_HOLD_DAYS = 3;

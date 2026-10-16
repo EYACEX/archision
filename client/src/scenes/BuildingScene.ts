@@ -227,6 +227,7 @@ export class BuildingScene {
     const floor = this.currentProject?.floors.find(f => f.units.some(u => u.id === update.unit_id));
     if (!floor) return null;
     const unit = floor.units.find(u => u.id === update.unit_id)!;
+    if (update.price !== undefined) unit.price = update.price; // price changes don't recolour anything
     if (unit.status === update.status && unit.reserved_until === update.reserved_until) return floor;
     unit.status = update.status;
     unit.reserved_until = update.reserved_until;

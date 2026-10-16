@@ -6,8 +6,10 @@ import cors from 'cors';
 import { Server } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { redisPub, redisSub } from './db/redis';
+import { agentsRouter, authRouter } from './routes/auth';
 import { floorsRouter } from './routes/floors';
 import { projectsRouter } from './routes/projects';
+import { salesRouter } from './routes/sales';
 import { unitsRouter } from './routes/units';
 import { setupSync, type SyncServer } from './services/sync';
 
@@ -35,9 +37,12 @@ setupSync(io);
 // Baked models and their lightmaps (pipeline/bake → npm run model:attach). Immutable per bake folder.
 app.use('/assets', express.static(path.resolve(process.env.ASSETS_PATH ?? './assets'), { maxAge: '7d' }));
 
+app.use('/api/auth', authRouter);
+app.use('/api/agents', agentsRouter);
 app.use('/api/projects', projectsRouter);
 app.use('/api/floors', floorsRouter);
 app.use('/api/units', unitsRouter(io));
+app.use('/api', salesRouter(io));
 
 const port = Number(process.env.PORT ?? 3001);
 httpServer.listen(port, () => console.log(`PropView server listening on :${port}`));

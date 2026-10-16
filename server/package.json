@@ -12,6 +12,7 @@
     "import:dxf": "tsx src/scripts/import-dxf.ts",
     "import:ifc": "tsx src/scripts/import-ifc.ts",
     "model:attach": "tsx src/scripts/attach-model.ts",
+    "agent:create": "tsx src/scripts/create-agent.ts",
     "parser:install": "python -m pip install -r src/services/parser/requirements.txt",
     "samples:dxf": "python src/services/parser/make_sample_dxf.py samples"
   },

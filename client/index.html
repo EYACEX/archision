@@ -53,6 +53,32 @@
       .has-arch .fp-unit { fill-opacity: .3; }
       .has-arch .fp-unit.hover { fill-opacity: .55; }
       .fp-room-sub { fill: #9aa1ab; stroke-width: .06px; }
+
+      /* Buyer unit panel: right-hand drawer on desktop, bottom sheet on phones. */
+      .unit-panel { position: fixed; z-index: 4; top: 64px; right: 16px; bottom: 16px; width: 340px; overflow-y: auto; padding: 18px 20px;
+                    background: rgba(22,26,32,.97); border: 1px solid #2a2e36; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.4); }
+      .unit-panel[hidden] { display: none; }
+      .unit-panel h2 { margin: 0; font-size: 22px; }
+      .up-close { position: absolute; top: 10px; right: 12px; width: 32px; height: 32px; font-size: 22px; line-height: 1; color: #9aa1ab;
+                  background: none; border: 0; cursor: pointer; }
+      .up-status { display: block; margin: 2px 0 12px; font-weight: 600; text-transform: capitalize; }
+      .up-facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 0 0 12px; }
+      .up-facts dt { color: #9aa1ab; } .up-facts dd { margin: 0; }
+      .up-rooms { margin: 0 0 16px; padding: 10px 0 0 18px; border-top: 1px solid #2a2e36; color: #c4c9d1; }
+      .up-form { padding-top: 12px; border-top: 1px solid #2a2e36; }
+      .up-form h3 { margin: 0 0 8px; font-size: 15px; }
+      .up-form label { display: block; margin-bottom: 8px; font-size: 13px; color: #9aa1ab; }
+      .up-form input, .up-form textarea { display: block; width: 100%; box-sizing: border-box; margin-top: 3px; padding: 8px 10px; font: inherit; font-size: 15px;
+                                          color: #e6e8eb; background: #0f1115; border: 1px solid #2a2e36; border-radius: 6px; }
+      .up-form button.primary { width: 100%; margin-top: 6px; padding: 10px; font: inherit; font-weight: 600; color: #fff; background: #2f8a55;
+                                border: 0; border-radius: 8px; cursor: pointer; }
+      .up-form button:disabled { opacity: .6; }
+      .up-error { color: #ff8a8a; font-size: 13px; }
+      .up-privacy { margin: 8px 0 0; font-size: 12px; color: #9aa1ab; }
+      .up-done { padding: 12px; color: #7fd6a0; background: rgba(63,174,106,.12); border-radius: 8px; }
+      @media (max-width: 640px) {
+        .unit-panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 75vh; border-radius: 14px 14px 0 0; }
+      }
     </style>
   </head>
   <body>

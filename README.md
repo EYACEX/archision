@@ -26,6 +26,28 @@ npm run dev            # http://localhost:5173
 
 Open http://localhost:5173 — the building renders in 3D. Open it in two windows to see live sync.
 
+## Agent panel and buyer requests
+
+Sales staff use **http://localhost:5173/agent.html**. Create the first admin once:
+
+```bash
+cd server
+npm run agent:create -- --email you@company.com --name "Your Name" --admin
+```
+
+It prints a random password once. Sign in at `/agent.html`; admins add the other agents in the **Agents** tab.
+
+| Tab | Who | What |
+|---|---|---|
+| Units | everyone | Every unit with price and status. **Reserve / Sold / Release** changes it live for every viewer. Click a unit code to see its history (who changed what, when). |
+| Requests | everyone | Buyers who tapped "Request a call back". Call them, then **Reserve unit**, mark **Contacted**, or **Dismiss**. |
+| Prices | admins | Upload an Excel (.xlsx) or CSV sheet: `unit_code`, `price` (SAR) and optionally `status`. Arabic headers work too: رقم الوحدة، السعر، الحالة. You get a preview with % changes first; a sheet with any error applies nothing. **Download current prices** gives you a sheet to edit. |
+| Agents | admins | Add agents (each gets a one-time random password), reset passwords, deactivate. |
+
+**Buyers:** on the public site, tapping an apartment in a floor plan opens its details and a short form (name, phone, note). The unit stays available until an agent reserves it. Requests are limited to 5 per hour per network address, and a repeat request from the same phone for the same unit is merged.
+
+Scripts and integrations can still use `Authorization: Bearer $AGENT_API_KEY`. Those changes are logged as "System".
+
 ## Open it on a phone (same Wi-Fi)
 
 Find the PC's address (`ipconfig` → Wi-Fi IPv4, e.g. `10.7.0.147`) and open `http://<that-ip>:5173` on the phone. The client calls the API on the same host it was loaded from. In development the server accepts requests from any private-network origin (10.x, 192.168.x, 172.16–31.x). In production only `CLIENT_URL` is accepted, and it can be a comma-separated list.

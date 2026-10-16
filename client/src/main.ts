@@ -1,4 +1,5 @@
 import { api, assetUrl, subscribeToProject } from './api/client';
+import { UnitPanel } from './components/UnitPanel';
 import { loadBakedModel } from './scenes/bakedModel';
 import { formatPrice } from './format';
 import { BuildingScene } from './scenes/BuildingScene';
@@ -69,9 +70,13 @@ async function main() {
     const shown = floorPlan.currentFloor ?? hoveredFloor;
     hud.innerHTML = shown ? describeFloor(shown, project) : idle;
   };
+  const unitPanel = new UnitPanel(document.body, {
+    requestHold: (unit, details) => api.requestHold(unit.id, details),
+  });
   const floorPlan = new FloorScene(document.body, {
-    onBack: () => { floorPlan.close(); renderHud(); },
+    onBack: () => { unitPanel.close(); floorPlan.close(); renderHud(); },
     loadPlan: floor => api.getFloorPlan(floor.id),
+    onUnitSelect: unit => unitPanel.open(unit),
   });
   renderHud();
 
@@ -92,15 +97,18 @@ async function main() {
     onUnitUpdated: update => {
       const floor = scene.updateUnitStatus(update);
       if (floor && floor === floorPlan.currentFloor) floorPlan.updateUnitStatus(update);
+      // The panel shows the same Unit object the scenes just updated; re-render it (e.g. it got reserved).
+      if (unitPanel.current?.id === update.unit_id) unitPanel.refresh();
       if (floor) renderHud(); // cheap, and unit-less floors describe units on other floors
     },
     onReconnect: async () => {
       // Replay any changes missed while offline by diffing against a fresh copy.
       const fresh = await api.getProject(project.id);
       for (const unit of fresh.floors.flatMap(f => f.units)) {
-        scene.updateUnitStatus({ project_id: project.id, unit_id: unit.id, status: unit.status, reserved_until: unit.reserved_until });
+        scene.updateUnitStatus({ project_id: project.id, unit_id: unit.id, status: unit.status, reserved_until: unit.reserved_until, price: unit.price });
       }
       floorPlan.refresh();
+      unitPanel.refresh();
       renderHud();
     },
     onConnectionChange: connected => {

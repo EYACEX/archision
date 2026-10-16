@@ -12,6 +12,8 @@ export const STATUS_COLORS: Record<UnitStatus, string> = {
 
 export interface FloorSceneOptions {
   onBack?: () => void;
+  /** A unit was clicked or tapped (opens the buyer's unit panel). */
+  onUnitSelect?: (unit: Unit) => void;
   /** Fetches a floor's engineered plan (only called when floor.has_plan). */
   loadPlan?: (floor: Floor) => Promise<FloorPlan>;
 }
@@ -162,6 +164,7 @@ export class FloorScene {
     for (const unit of floor.units) {
       const shape = svgEl('polygon', { points: pointsAttr(unit.polygon), fill: STATUS_COLORS[unit.status], class: 'fp-unit' });
       shape.addEventListener('pointerenter', e => { this.setHovered(unit); this.moveTooltip(e); });
+      shape.addEventListener('click', () => { this.setHovered(null); this.opts.onUnitSelect?.(unit); });
       shape.addEventListener('pointerleave', () => this.setHovered(null));
       shape.addEventListener('pointermove', this.moveTooltip);
       units.append(shape);
