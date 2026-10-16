@@ -1,0 +1,3 @@
+ezdxf>=1.3,<2
+shapely>=2,<3   # mesh_plan.py / ifc.py: footprints, plan sections
+ifcopenshell>=0.8   # ifc.py: Revit / Archicad IFC import

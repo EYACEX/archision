@@ -1,0 +1,13 @@
+{
+  "name": "propview-bake",
+  "private": true,
+  "description": "Offline bake pipeline: Blender lightmap bake + glTF compression. Runs on the render machine, not the server.",
+  "scripts": {
+    "compress": "gltf-transform optimize --compress meshopt --texture-compress webp --texture-size 1024 --prune-attributes false --join false --flatten false --instance false --palette false",
+    "check": "node check_glb.mjs",
+    "mobile": "node mobile_lightmaps.mjs"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "^4.1.0"
+  }
+}

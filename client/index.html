@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PropView</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #0f1115; color: #e6e8eb; font-family: system-ui, sans-serif; }
+      #scene { display: block; width: 100vw; height: 100vh; }
+      #hud { position: fixed; top: 16px; left: 16px; padding: 12px 16px; background: rgba(15,17,21,.8);
+             border: 1px solid #2a2e36; border-radius: 8px; font-size: 14px; line-height: 1.5; pointer-events: none; }
+      #hud h1 { margin: 0 0 4px; font-size: 16px; }
+      .muted { color: #9aa1ab; }
+      .live { margin-left: 8px; font-size: 12px; font-weight: 500; color: #9aa1ab; }
+      .live.on { color: #3fae6a; }
+      #picker:empty { display: none; }
+      #picker select { pointer-events: auto; margin: 2px 0 6px; padding: 4px 6px; max-width: 100%; font: inherit; font-size: 13px;
+                       color: inherit; background: #1a1d23; border: 1px solid #2a2e36; border-radius: 6px; }
+      #hud { z-index: 2; }
+      #view-toggle-slot:empty { display: none; }
+      #view-toggle { pointer-events: auto; margin-top: 8px; padding: 5px 10px; font: inherit; font-size: 13px; color: inherit;
+                     background: #1a1d23; border: 1px solid #2a2e36; border-radius: 6px; cursor: pointer; }
+      #view-toggle:hover { border-color: #4a505c; background: #22262e; }
+      #floor-plan { position: fixed; inset: 0; z-index: 1; background: #0f1115; }
+      #floor-plan[hidden] { display: none; }
+      .fp-svg { display: block; width: 100%; height: 100%; box-sizing: border-box; padding: 136px 24px 48px; }
+      .fp-bar { position: fixed; top: 16px; right: 16px; display: flex; align-items: center; gap: 12px; font-size: 14px; }
+      .fp-back { padding: 6px 12px; font: inherit; color: inherit; background: #1a1d23; border: 1px solid #2a2e36;
+                 border-radius: 6px; cursor: pointer; }
+      .fp-back:hover { border-color: #4a505c; background: #22262e; }
+      .fp-legend { position: fixed; bottom: 16px; left: 16px; display: flex; gap: 14px; font-size: 13px; color: #9aa1ab; }
+      .fp-legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 2px; }
+      .fp-outline { fill: #1a1d23; stroke: #4a505c; stroke-width: 2px; vector-effect: non-scaling-stroke; }
+      .fp-unit { fill-opacity: .55; stroke: #0f1115; stroke-width: 2px; vector-effect: non-scaling-stroke; cursor: pointer; }
+      .fp-unit.hover { fill-opacity: .85; stroke: #e6e8eb; }
+      .fp-rooms polygon { fill: none; stroke: rgba(230,232,235,.45); stroke-width: 1px; vector-effect: non-scaling-stroke; pointer-events: none; }
+      .fp-labels { pointer-events: none; text-anchor: middle; dominant-baseline: central; paint-order: stroke;
+                   stroke: rgba(15,17,21,.7); stroke-linejoin: round; }
+      .fp-unit-label { fill: #fff; font-weight: 600; stroke-width: .15px; }
+      .fp-room-label { fill: #c4c9d1; stroke-width: .08px; }
+      .fp-tooltip { position: fixed; top: 0; left: 0; z-index: 3; padding: 8px 12px; background: rgba(15,17,21,.95);
+                    border: 1px solid #2a2e36; border-radius: 8px; font-size: 13px; line-height: 1.5; pointer-events: none; white-space: nowrap; }
+      .fp-tooltip[hidden] { display: none; }
+      .fp-status { font-weight: 500; text-transform: capitalize; }
+      /* Engineered plan (IFC): architectural drawing conventions on the dark theme. */
+      .fp-arch path { pointer-events: none; vector-effect: non-scaling-stroke; }
+      .fp-walls { fill: #e6e8eb; stroke: #e6e8eb; stroke-width: .5px; }
+      .fp-windows { fill: #7fb4d8; fill-opacity: .55; stroke: #a9d2ee; stroke-width: 1px; }
+      .fp-doors { fill: #c4c9d1; stroke: #c4c9d1; stroke-width: .5px; }
+      .fp-swings { fill: none; stroke: #c4c9d1; stroke-width: 1px; stroke-dasharray: 3 2; }
+      .fp-furniture { fill: none; stroke: rgba(230,232,235,.4); stroke-width: 1px; }
+      .has-arch .fp-rooms { display: none; }          /* real walls replace the room outlines */
+      .has-arch .fp-unit { fill-opacity: .3; }
+      .has-arch .fp-unit.hover { fill-opacity: .55; }
+      .fp-room-sub { fill: #9aa1ab; stroke-width: .06px; }
+    </style>
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+    <div id="hud"><h1>PropView <span id="live" class="live">○ Connecting…</span></h1><div id="picker"></div><div id="hud-body" class="muted">Loading…</div><div id="view-toggle-slot"></div></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

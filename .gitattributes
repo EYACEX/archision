@@ -1,0 +1,8 @@
+# Store text with LF in the repository on every OS; binaries untouched.
+* text=auto eol=lf
+*.png binary
+*.mp4 binary
+*.webp binary
+*.glb binary
+*.dxf -text
+*.ifc -text
